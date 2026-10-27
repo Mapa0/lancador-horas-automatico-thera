@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Roteiro mensal do lançador Thera",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "referencia",
+    "localidade",
+    "codigo_projeto",
+    "nome_projeto",
+    "nome_cliente",
+    "feriados",
+    "fontes_feriados",
+    "lancamentos"
+  ],
+  "properties": {
+    "referencia": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "localidade": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pais",
+        "uf",
+        "municipio"
+      ],
+      "properties": {
+        "pais": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "uf": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "municipio": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      }
+    },
+    "codigo_projeto": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "nome_projeto": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "nome_cliente": {
+      "type": "string",
+      "pattern": "\\S"
+    },
+    "usuario": {
+      "type": "string"
+    },
+    "somente_exemplo": {
+      "type": "boolean",
+      "default": false
+    },
+    "feriados": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+      }
+    },
+    "fontes_feriados": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "format": "uri",
+        "pattern": "^https?://"
+      }
+    },
+    "lancamentos": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "data",
+          "narrativa",
+          "projecao"
+        ],
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "date",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+          },
+          "narrativa": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "projecao": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
+

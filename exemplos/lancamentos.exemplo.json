@@ -1,0 +1,32 @@
+{
+  "referencia": "2026-10",
+  "localidade": {
+    "pais": "BR",
+    "uf": "SP",
+    "municipio": "São Paulo"
+  },
+  "codigo_projeto": "000000",
+  "nome_projeto": "PROJETO FICTICIO - SUBSTITUA PELO SEU",
+  "nome_cliente": "CLIENTE FICTICIO - SUBSTITUA PELO SEU",
+  "usuario": "",
+  "somente_exemplo": true,
+  "feriados": [
+    "2026-10-12"
+  ],
+  "fontes_feriados": [
+    "https://www2.prefeitura.sp.gov.br/web/gestao/w/calendario_2026"
+  ],
+  "lancamentos": [
+    {
+      "data": "2026-10-01",
+      "narrativa": "EXEMPLO FICTICIO: revisão de requisitos e planejamento das atividades do projeto.",
+      "projecao": true
+    },
+    {
+      "data": "2026-10-02",
+      "narrativa": "EXEMPLO FICTICIO: implementação de ajustes e execução de testes do projeto.",
+      "projecao": true
+    }
+  ]
+}
+

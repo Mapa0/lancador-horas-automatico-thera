@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="pt-BR"><meta charset="utf-8"><title>MOCK LOCAL - Multidados</title>
+<body><h1>MOCK LOCAL: nenhum lançamento real</h1>
+<form id="login_portal" style="display:none" onsubmit="loginMock(event)">
+  <input id="login" placeholder="Usuário"><input id="password_sem_md5" placeholder="Senha" type="password">
+  <button type="submit">Entrar</button>
+</form>
+<div id="calendarCalendario"><table>
+  <thead><tr><td class="title" colspan="5">Outubro, 2026</td></tr>
+  <tr class="headrow"><td class="button nav" onclick="moveMonth(-1)">‹</td><td class="button nav" onclick="moveMonth(1)">›</td></tr></thead>
+  <tbody id="miniDays"></tbody>
+</table></div>
+<a href="?cmd=listar&amp;SHOW=mes" onclick="showMonth(event)">Ícone mensal</a>
+<div id="viewLabel">VISUALIZAÇÃO MENSAL</div>
+<table id="calendar"><tr>
+<td id="day-01"><a href="javascript:editHora('08:00','','01/10/2026')">01 de Outubro</a></td>
+<td id="day-02"><a href="javascript:editHora('08:00','','02/10/2026')">02</a></td>
+</tr></table>
+<div role="dialog" aria-label="Realizando Lançamento" id="form" style="display:none">
+  <button aria-label="close" onclick="document.getElementById('form').style.display='none'">close</button>
+  <input id="f_data_b"><input id="codprojeto_form_lanctos">
+  <input id="nameprojeto_form_lanctos" onclick="document.getElementById('lookup').style.display='block'">
+  <input id="namecliente_form_lanctos">
+  <select id="idtarefa_utbms"><option value="12082">7001 - Time &amp; Material</option></select>
+  <select id="idatividade_utbms"><option value="12083">7101 - TM Atividade</option></select>
+  <input id="hora"><input id="intervalo_hr_inicial"><input id="intervalo_hr_final"><input id="hora_fim">
+  <input id="tempo_digitado" readonly><textarea id="narrativa_principal"></textarea>
+  <button onclick="saveMock()">Salvar</button><button>Salvar e Continuar</button>
+</div>
+<div role="dialog" aria-label="Selecione o Projeto" id="lookup" style="display:none">
+  <table><tr onclick="setDadosCliProjeto_popup()"><td>000000</td><td>CLIENTE FICTICIO - SUBSTITUA PELO SEU</td><td>PROJETO FICTICIO - SUBSTITUA PELO SEU</td></tr></table>
+</div>
+<script>
+let saveCount = 0;
+let currentYear = 2026, currentMonth = 10, selectedDay = 27;
+let rejectLogin = false;
+const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+function loginMock(event) {
+  event.preventDefault();
+  if (rejectLogin) return;
+  document.getElementById('login_portal').style.display = 'none';
+  document.getElementById('calendarCalendario').style.display = 'block';
+}
+function drawMini() {
+  document.querySelector('#calendarCalendario td.title').textContent = monthNames[currentMonth-1] + ', ' + currentYear;
+  const tbody = document.getElementById('miniDays'); tbody.innerHTML='';
+  const tr = document.createElement('tr');
+  const week = document.createElement('td'); week.className='day wn'; week.textContent='1'; tr.append(week);
+  for (let day=1; day<=new Date(currentYear,currentMonth,0).getDate(); day++) {
+    const td=document.createElement('td'); td.className='day' + (day===selectedDay?' selected':''); td.textContent=day;
+    td.onclick=()=>selectDay(day); tr.append(td);
+  }
+  tbody.append(tr);
+}
+function moveMonth(offset) {
+  const d=new Date(currentYear,currentMonth-1+offset,1); currentYear=d.getFullYear(); currentMonth=d.getMonth()+1; drawMini();
+}
+function selectDay(day) {
+  selectedDay=day; drawMini();
+  document.getElementById('viewLabel').textContent='VISUALIZAÇÃO DIÁRIA'; document.getElementById('calendar').style.display='none';
+}
+function showMonth(event) {
+  event.preventDefault(); document.getElementById('viewLabel').textContent='VISUALIZAÇÃO MENSAL';
+  for (const day of [1,2]) {
+    const date=String(day).padStart(2,'0')+'/'+String(currentMonth).padStart(2,'0')+'/'+currentYear;
+    const a=document.querySelector('#day-'+String(day).padStart(2,'0')+' > a');
+    a.setAttribute('href',`javascript:editHora('08:00','','${date}')`);
+  }
+  document.getElementById('calendar').style.display='table';
+}
+drawMini();
+function val(id) { return document.getElementById(id).value; }
+function set(id, value) { document.getElementById(id).value = value; }
+function editHora(hour, ignored, day) {
+  set('f_data_b', day); set('codprojeto_form_lanctos', ''); set('nameprojeto_form_lanctos', '');
+  set('namecliente_form_lanctos', ''); set('hora', hour); set('intervalo_hr_inicial', '00:00');
+  set('intervalo_hr_final', '00:00'); set('hora_fim', '09:00'); set('narrativa_principal', '');
+  document.getElementById('form').style.display = 'block'; total();
+}
+function setDadosCliProjeto_popup() {
+  set('codprojeto_form_lanctos','000000');
+  set('nameprojeto_form_lanctos','PROJETO FICTICIO - SUBSTITUA PELO SEU');
+  set('namecliente_form_lanctos','CLIENTE FICTICIO - SUBSTITUA PELO SEU'); document.getElementById('lookup').style.display = 'none';
+}
+function total() {
+  const m = id => { const v = val(id).split(':').map(Number); return v[0]*60 + v[1]; };
+  const minutes = m('hora_fim') - m('hora') - (m('intervalo_hr_final') - m('intervalo_hr_inicial'));
+  if (Number.isFinite(minutes)) set('tempo_digitado', String(Math.floor(minutes/60)).padStart(2,'0') + ':' + String(minutes%60).padStart(2,'0'));
+}
+['hora','intervalo_hr_inicial','intervalo_hr_final','hora_fim'].forEach(id => {
+  document.getElementById(id).addEventListener('blur',total);
+  document.getElementById(id).addEventListener('input',total);
+});
+function saveMock() {
+  const day = val('f_data_b'); const narrative = val('narrativa_principal'); const cell = document.getElementById('day-' + day.slice(0,2));
+  const link = document.createElement('a'); saveCount++;
+  link.setAttribute('href', `javascript:editHora('08:00','','${day}','mock-${saveCount}','T')`);
+  link.textContent = val('nameprojeto_form_lanctos');
+  cell.append(link, document.createTextNode(' Horário: 08:00 - 17:00 Narrativa Principal: ' + narrative));
+  document.getElementById('form').style.display = 'none';
+}
+</script></body></html>
+
